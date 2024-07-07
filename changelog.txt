@@ -1,9 +1,8 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.1.0
-Date: 2024-xx-xx
+Version: 0.0.1
+Date: 2024-08-21
   Major Features:
     - Mark special trees on the map.
-  Minor Features:
   Locale:
     - English locale provided.
   Info:
