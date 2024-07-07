@@ -1,26 +1,29 @@
-local Chunk = {
-    surface = nil,
-    config = nil,
+require("__SpecialResourceMarker__.debug")
+local Config = require("__SpecialResourceMarker__.Config")
 
-    new = function(self, o)
-        assert(o.surface)
-        assert(o.config)
-        setmetatable(o, self)
-        self.__index = self
-        return o
-    end,
+local function _check_chunk(chunk)
+    assert(chunk.surface)
+    assert(chunk.config)
+end
 
-    chart_special_resources = function(self, area)
-        -- TODO: avoid recharting unchanged areas (requires listening for entity destroyed events)
-        log("charting area...")
-        -- determine special resources in chunk
-        local special_entities = self.surface.find_entities_filtered { area = area, name = self.config.get_entity_names() }
 
-        -- add/update markers
-    end
-}
+local Chunk = {}
 
-Chunk.__index = Chunk
+Chunk.new = function(o)
+    assert(o.surface)
+    assert(o.config)
+    return o
+end
+
+Chunk.chart_special_resources = function(chunk, area)
+    _check_chunk(chunk)
+    -- TODO: avoid recharting unchanged areas (requires listening for entity destroyed events)
+    -- determine special resources in chunk
+    local entity_names = Config.get_entity_names(chunk.config)
+    local special_entities = chunk.surface.find_entities_filtered { area = area, name = entity_names }
+    log("charting area " .. dump_table(area) .. ", found " .. #special_entities .. " entities (" .. dump_table(entity_names) ..")")
+    -- add/update markers
+end
 
 return Chunk
 

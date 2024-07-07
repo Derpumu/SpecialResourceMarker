@@ -1,7 +1,7 @@
-local Config = {
-    get_entity_names = function()
-        return {"rock"}
-    end
-}
+local Config = {}
+
+Config.get_entity_names = function(cfg)
+    return { "rock" }
+end
 
 return Config

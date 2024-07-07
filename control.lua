@@ -49,7 +49,7 @@ end
 
 local function init_global()
 	-- initialize global data
-	global.config = global.config or Config
+	global.config = global.config or {}
 	global.surface_map = global.surface_map or {}
 	if not global.surface_map[1] then _add_surface_map(1) end -- no event raised for nauvis
 end

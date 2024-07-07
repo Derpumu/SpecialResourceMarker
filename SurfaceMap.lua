@@ -1,5 +1,10 @@
 local Chunk = require("__SpecialResourceMarker__.Chunk")
-require("__SpecialResourceMarker__.debug")
+
+local function _check_map(map)
+    assert(map.surface)
+    assert(map.config)
+    assert(map.chunks)
+end
 
 local function _get_chunk_xy(chunk_position)
     local x = chunk_position.x ~= nil and chunk_position.x or chunk_position[1]
@@ -7,13 +12,13 @@ local function _get_chunk_xy(chunk_position)
     return x, y
 end
 
-local function _get_chunk(sm, chunk_position)
+local function _get_chunk(map, chunk_position)
+    _check_map(map)
     local x, y = _get_chunk_xy(chunk_position)
-    sm.chunks[x] = sm.chunks[x] or {}
-    sm.chunks[x][y] = sm.chunks[x][y] or Chunk:new { surface = sm.surface, config = sm.config }
-    return sm.chunks[x][y]
+    map.chunks[x] = map.chunks[x] or {}
+    map.chunks[x][y] = map.chunks[x][y] or Chunk.new{ surface = map.surface, config = map.config }
+    return map.chunks[x][y]
 end
-
 
 local SurfaceMap = {}
 
@@ -24,14 +29,16 @@ SurfaceMap.new = function(o)
     return o
 end
 
-SurfaceMap.chart_special_resources = function(sm, chunk_position, area)
-    local chunk = _get_chunk(sm, chunk_position)
-    chunk:chart_special_resources(area, {})
+SurfaceMap.chart_special_resources = function(map, chunk_position, area)
+    _check_map(map)
+    local chunk = _get_chunk(map, chunk_position)
+    Chunk.chart_special_resources(chunk, area)
 end
 
-SurfaceMap.delete_chunk = function(sm, chunk_position)
+SurfaceMap.delete_chunk = function(map, chunk_position)
+    _check_map(map)
     local x, y = _get_chunk_xy(chunk_position)
-    if sm.chunks[x] then sm.chunks[x][y] = nil end
+    if map.chunks[x] then map.chunks[x][y] = nil end
 end
 
 return SurfaceMap
