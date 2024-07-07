@@ -1,0 +1,13 @@
+{
+  "name": "SpecialResourceMarker",
+  "version": "0.0.1",
+  "title": "Special Resource Marker",
+  "author": "DerPumu",
+  "contact": "https://github.com/Derpumu/SpecialResourceMarker",
+  "homepage": "https://mods.factorio.com/mod/SpecialResourceMarker",
+  "factorio_version": "1.1",
+  "description": "This mods marks trees, rocks, and other entities containing special resources on the map.",
+  "dependencies": [
+    "base >= 1.1"
+  ]
+}
