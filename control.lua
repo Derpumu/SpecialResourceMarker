@@ -1,5 +1,7 @@
 require("__SpecialResourceMarker__.debug")
 local SurfaceMap = require("__SpecialResourceMarker__.SurfaceMap")
+local Config = require("__SpecialResourceMarker__.Config")
+
 
 local function on_chunk_charted(event)
     -- Called when a chunk is charted or re-charted, i.e. "seen" by players or radars
@@ -10,7 +12,7 @@ local function on_chunk_charted(event)
 	-- local force = event.force
 
 	local surface_map = global.surface_map[surface_index]
-	surface_map:chart_special_resources(chunk_position, area)
+	SurfaceMap.chart_special_resources(surface_map, chunk_position, area)
 end
 
 local function on_chunk_deleted(event)
@@ -20,12 +22,15 @@ local function on_chunk_deleted(event)
     local chunk_positions = event.positions	-- array[ChunkPosition]
 	local surface_map = global.surface_map[surface_index]
 	for _, chunk_position in pairs(chunk_positions) do
-		surface_map:delete_chunk(chunk_position)
+		SurfaceMap.delete_chunk(surface_map, chunk_position)
 	end
 end
 
 local function _add_surface_map(surface_id)
-	global.surface_map[surface_id] = SurfaceMap:new{surface = game.get_surface(surface_id)}
+	global.surface_map[surface_id] = SurfaceMap.new{
+		surface = game.get_surface(surface_id),
+		config = global.config
+	}
 end
 
 local function on_surface_created(event)
@@ -43,6 +48,8 @@ end
 --end
 
 local function init_global()
+	-- initialize global data
+	global.config = global.config or Config
 	global.surface_map = global.surface_map or {}
 	if not global.surface_map[1] then _add_surface_map(1) end -- no event raised for nauvis
 end
