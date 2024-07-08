@@ -12,7 +12,7 @@ local array = require("__Pacifist__.lib.array")
 function dump_table(table, fields)
     str = "{"
     for k, v in pairs(table or {}) do
-        if not fields or array.contains(fields, k) then
+        if array.is_empty(fields) or array.contains(fields, k) then
             str = str .. "\n" .. tostring(k) .. ": "
             if type(v) == "table" then
                 str = str .. dump_table(v, fields)

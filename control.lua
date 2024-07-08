@@ -57,6 +57,7 @@ end
 function on_init()
 	-- called once when the mod is added to a save (new game or later)
 	init_global()
+	Config.init(global.config, game)
 end
 
 function on_configuration_changed(configuration_changed_data)

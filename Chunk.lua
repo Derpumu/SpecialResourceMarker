@@ -9,7 +9,7 @@ end
 local function _reduce_entities(special_entities)
     -- return array[position, prototype, name]
     local reduced_entities = {}
-    for _, entity in ipairs(special_entities) do
+    for _, entity in pairs(special_entities) do
         table.insert(reduced_entities, { position = entity.position, prototype = entity.prototype, name = entity.name })
     end
     return reduced_entities
@@ -30,7 +30,7 @@ Chunk.chart_special_resources = function(chunk, area)
     local entity_names = Config.get_entity_names(chunk.config)
     local special_entities = chunk.surface.find_entities_filtered { area = area, name = entity_names }
     local reduced_entities = _reduce_entities(special_entities)
-    log("charting area for entities. found " .. #reduced_entities .. " entities: (" .. dump_table(reduced_entities, {"name"}) .. ")")
+    log("charting area for entities. found " .. #reduced_entities .. " entities")
     -- TODO: add/update markers
 end
 
