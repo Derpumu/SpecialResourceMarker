@@ -18,12 +18,23 @@ local function _get_mining_results(prototype, game)
     return product_names
 end
 
+local _abundant_resources = {
+    "raw-fish",
+    "wood",
+    "stone"
+}
+
+local function _is_special_item(item_name)
+    return not array.contains(_abundant_resources, item_name)
+end
+
+
 
 local Config = {}
 Config.new = function()
     return {
         resource_names = {},
-        entity_names = {},
+        tracked_entity_names = {},
         entity_prototypes = {},
     }
 end
@@ -42,23 +53,27 @@ Config.init = function(config, game)
     end
 
     log("resources: " .. array.to_string(config.resource_names, "\n"))
-    log("entities: " .. array.to_string(config.entity_names, "\n"))
+    log("entities: " .. array.to_string(config.tracked_entity_names, "\n"))
 end
 
 Config.add_entity_prototype = function(config, prototype, mining_results)
     local name = prototype.name
     log("results: " .. name .. " -> " .. array.to_string(mining_results, " "))
+    local track_entities = array.any_of(mining_results, _is_special_item)
     config.entity_prototypes[name] = {
         name = name,
         prototype = prototype,
-        mining_results = mining_results
+        mining_results = mining_results,
+        track = track_entities
     }
-    table.insert(config.entity_names, name)
+    if track_entities then
+        table.insert(config.tracked_entity_names, name)
+    end
     array.append_unique(config.resource_names, mining_results)
 end
 
 Config.get_entity_names = function(config)
-    return config.entity_names
+    return config.tracked_entity_names
 end
 
 return Config
