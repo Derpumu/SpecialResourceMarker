@@ -31,12 +31,12 @@ end
 
 
 local Config = {}
-Config.new = function()
-    return {
-        resource_names = {},
-        tracked_entity_names = {},
-        entity_prototypes = {},
-    }
+Config.new = function(o)
+    o = o or {}
+    o.resource_names = {}
+    o.tracked_entity_names = {}
+    o.entity_prototypes = {}
+    return o
 end
 
 Config.init = function(config, game)
@@ -74,6 +74,17 @@ end
 
 Config.get_entity_names = function(config)
     return config.tracked_entity_names
+end
+
+Config.get_special_resources_for_entity = function(config, prototype_name)
+    local mining_results = config.entity_prototypes[prototype_name].mining_results
+    local special_resources = {}
+    for _, special_result in ipairs(config.tracked_entity_names) do
+        if array.contains(mining_results, special_result) then
+            table.insert(special_resources, special_result)
+        end
+    end
+    return special_resources
 end
 
 return Config
