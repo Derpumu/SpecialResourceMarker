@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.0.2
+Date: 2024-08-21
+  Major Features:
+    - Mark special rocks on the map.
+    - Add an option to ignore coal (true by default only if alien-biomes mod is loaded).
+---------------------------------------------------------------------------------------------------
 Version: 0.0.1
 Date: 2024-08-21
   Major Features:

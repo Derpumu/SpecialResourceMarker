@@ -1,3 +1,5 @@
+local array = require("__SpecialResourceMarker__.lib.array")
+
 local function _get_xy(position)
     local x = position.x ~= nil and position.x or position[1]
     local y = position.y ~= nil and position.y or position[2]
@@ -17,7 +19,8 @@ local function _get_special_product(entity)
     if not mineable_properties.minable then return nil end
 
     for _, product in pairs(mineable_properties.products) do
-        if product.name and product.name ~= "wood" then
+        if product.name and not array.contains(global.ignored_resources, product.name)
+        then
             return product
         end
     end
@@ -55,7 +58,7 @@ local function _chart_special_entities(surface_index, chunk_position, area, forc
     if chunk.charted[force] then return end
 
     local surface = game.get_surface(surface_index)
-    local entities = surface.find_entities_filtered { area = area, type = "tree" }
+    local entities = surface.find_entities_filtered { area = area, type = {"tree", "simple-entity"} }
 
     for _, entity in pairs(entities) do
         _check_and_chart_entity(force, entity)
@@ -89,6 +92,12 @@ local function on_surface_deleted(event)
 end
 
 local function init_global()
+    global.ignored_resources = { "wood", "stone" }
+    if settings.global["srm-ignore-coal"].value then
+        log("ignoring coal")
+        table.insert(global.ignored_resources, "coal")
+    end
+
     global.surface_map = global.surface_map or {}
     for _, surface in pairs(game.surfaces) do
         if not global.surface_map[surface.index] then _add_surface_map(surface.index) end
