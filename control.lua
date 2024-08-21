@@ -12,8 +12,8 @@ local function _get_chunk(surface_map, chunk_position)
     return surface_map.chunks[x][y]
 end
 
-local function _get_special_product(tree)
-    local mineable_properties = tree.prototype.mineable_properties
+local function _get_special_product(entity)
+    local mineable_properties = entity.prototype.mineable_properties
     if not mineable_properties.minable then return nil end
 
     for _, product in pairs(mineable_properties.products) do
@@ -37,29 +37,28 @@ end
 
 local function _add_marker(force, surface, position, name, product)
     local tag_spec = _create_tag_spec(position, name, product)
-
     force.add_chart_tag(surface, tag_spec)
 end
 
-local function _check_and_chart_tree(force, tree)
-    if not tree.minable then return end
+local function _check_and_chart_entity(force, entity)
+    if not entity.minable then return end
 
-    local special_product = _get_special_product(tree)
+    local special_product = _get_special_product(entity)
     if special_product then
-        _add_marker(force, tree.surface, tree.position, tree.name, special_product)
+        _add_marker(force, entity.surface, entity.position, entity.name, special_product)
     end
 end
 
-local function _chart_special_trees(surface_index, chunk_position, area, force)
+local function _chart_special_entities(surface_index, chunk_position, area, force)
     local surface_map = global.surface_map[surface_index]
     local chunk = _get_chunk(surface_map, chunk_position)
     if chunk.charted[force] then return end
 
     local surface = game.get_surface(surface_index)
-    local trees = surface.find_entities_filtered { area = area, type = "tree" }
+    local entities = surface.find_entities_filtered { area = area, type = "tree" }
 
-    for _, tree in pairs(trees) do
-        _check_and_chart_tree(force, tree)
+    for _, entity in pairs(entities) do
+        _check_and_chart_entity(force, entity)
     end
 
     chunk.charted[force] = true
@@ -73,7 +72,7 @@ local function on_chunk_charted(event)
     local area = event.area
     local force = event.force
 
-    _chart_special_trees(surface_index, chunk_position, area, force)
+    _chart_special_entities(surface_index, chunk_position, area, force)
 end
 
 local function _add_surface_map(surface_id)
@@ -96,7 +95,7 @@ local function init_global()
         for chunk in surface.get_chunks() do
             for _, force in pairs(game.forces) do
                 if force.is_chunk_charted(surface, chunk) then
-                    _chart_special_trees(surface.index, chunk, chunk.area, force)
+                    _chart_special_entities(surface.index, chunk, chunk.area, force)
                 end
             end
         end
