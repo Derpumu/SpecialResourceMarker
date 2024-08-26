@@ -39,6 +39,13 @@ local function _create_tag_spec(position, name, product)
 end
 
 local function _add_marker(force, surface, position, name, product)
+    local delta=5
+    local surrounding_area = { { position.x - delta, position.y - delta }, { position.x + delta, position.y + delta } }
+    local existing_tags = force.find_chart_tags(surface, surrounding_area)
+    if existing_tags and not array.is_empty(existing_tags) then
+        return
+    end
+
     local tag_spec = _create_tag_spec(position, name, product)
     force.add_chart_tag(surface, tag_spec)
 end
