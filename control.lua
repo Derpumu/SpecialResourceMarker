@@ -19,7 +19,7 @@ local function _get_special_product(entity)
     if not mineable_properties.minable then return nil end
 
     for _, product in pairs(mineable_properties.products) do
-        if product.name and not array.contains(global.ignored_resources, product.name)
+        if product.name and not array.contains(storage.ignored_resources, product.name)
         then
             return product
         end
@@ -60,11 +60,12 @@ local function _check_and_chart_entity(force, entity)
 end
 
 local function _chart_special_entities(surface_index, chunk_position, area, force)
-    local surface_map = global.surface_map[surface_index]
+    local surface_map = storage.surface_map[surface_index]
     local chunk = _get_chunk(surface_map, chunk_position)
     if chunk.charted[force] then return end
 
     local surface = game.get_surface(surface_index)
+    if not surface then return end
     local entities = surface.find_entities_filtered { area = area, type = {"tree", "simple-entity"} }
 
     for _, entity in pairs(entities) do
@@ -86,7 +87,7 @@ local function on_chunk_charted(event)
 end
 
 local function _add_surface_map(surface_id)
-    global.surface_map[surface_id] = {}
+    storage.surface_map[surface_id] = {}
 end
 
 local function on_surface_created(event)
@@ -94,20 +95,20 @@ local function on_surface_created(event)
 end
 
 local function on_surface_deleted(event)
-    -- on_surface_deleted -> remove from global data
-    global.surface_map[event.surface_index] = nil
+    -- on_surface_deleted -> remove from storage data
+    storage.surface_map[event.surface_index] = nil
 end
 
-local function init_global()
-    global.ignored_resources = { "wood", "stone" }
+local function init_storage()
+    storage.ignored_resources = { "wood", "stone" }
     if settings.global["srm-ignore-coal"].value then
         log("ignoring coal")
-        table.insert(global.ignored_resources, "coal")
+        table.insert(storage.ignored_resources, "coal")
     end
 
-    global.surface_map = global.surface_map or {}
+    storage.surface_map = storage.surface_map or {}
     for _, surface in pairs(game.surfaces) do
-        if not global.surface_map[surface.index] then _add_surface_map(surface.index) end
+        if not storage.surface_map[surface.index] then _add_surface_map(surface.index) end
         for chunk in surface.get_chunks() do
             for _, force in pairs(game.forces) do
                 if force.is_chunk_charted(surface, chunk) then
@@ -120,12 +121,12 @@ end
 
 function on_init()
     -- called once when the mod is added to a save (new game or later)
-    init_global()
+    init_storage()
 end
 
 function on_configuration_changed(configuration_changed_data)
     -- called when mod startup settings have changed, mods have been added or removed, or mod/game version have changed etc.
-    init_global() -- in case we load an older save that does not have the same data
+    init_storage() -- in case we load an older save that does not have the same data
 end
 
 script.on_init(on_init)
